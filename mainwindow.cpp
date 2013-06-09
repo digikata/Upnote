@@ -13,9 +13,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect( search, SIGNAL(search_status(QString)),
              ui->statusBar, SLOT(showMessage(QString)));
+
+    connect( ui->pb_opt, SIGNAL(clicked()),
+             this, SLOT(clear_searchline()));
+
+    ui->mainToolBar->hide();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+void MainWindow::clear_searchline()
+{
+    ui->mainline->clear();
+    search->search_clear();
 }
