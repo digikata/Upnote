@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = nvx
 TEMPLATE = app
 
+QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -20,3 +21,6 @@ HEADERS  += mainwindow.h \
     searcher.h
 
 FORMS    += mainwindow.ui
+
+OTHER_FILES += \
+    notes.txt
