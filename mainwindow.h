@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <functional>
+#include <QString>
 #include <QStringList>
 #include <QMainWindow>
 
@@ -35,6 +36,7 @@ private:
     typedef std::function<void (const QString&)> noteFunc;
 
     void iterNotes(noteFunc);
+    void loadNote( const QString& fname);
     void populateList();
 };
 

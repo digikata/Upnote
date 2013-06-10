@@ -27,6 +27,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->mainToolBar->hide();
     populateList();
+
+    connect( ui->doclist, &QListWidget::itemClicked,
+        [=](QListWidgetItem* item)
+        {
+            loadNote(item->text());
+        });
 }
 
 MainWindow::~MainWindow()
@@ -58,6 +64,25 @@ void MainWindow::iterNotes(noteFunc proc)
     {
         proc(fname);
     }
+}
+
+
+void MainWindow::loadNote(const QString &fname)
+{
+    ui->textEdit->setUpdatesEnabled(false);
+    ui->textEdit->clear();
+
+    //TODO: textfile & length check... if too long, just load partial?
+    QString fpath = getNotesPath() + "/" + fname;
+    QFile ff(fpath);
+
+    ff.open(QFile::ReadOnly);
+    QString note;
+    note = ff.readAll();
+    ff.close();
+
+    ui->textEdit->setText(note);
+    ui->textEdit->setUpdatesEnabled(true);
 }
 
 void MainWindow::populateList()
