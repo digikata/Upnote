@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>424</width>
-    <height>290</height>
+    <width>476</width>
+    <height>525</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,7 +36,31 @@
      </layout>
     </item>
     <item>
-     <widget class="QListView" name="doclist"/>
+     <widget class="QTabWidget" name="tabs">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab_list">
+       <attribute name="title">
+        <string>Note List</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QListWidget" name="doclist"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_doc">
+       <attribute name="title">
+        <string>Note</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QTextEdit" name="textEdit"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -45,7 +69,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>424</width>
+     <width>476</width>
      <height>25</height>
     </rect>
    </property>

@@ -1,3 +1,6 @@
+
+#include <QStringList>
+#include <QDir>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -7,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     search = new Searcher(this);
+    notelist = 0;
 
     connect( ui->mainline, SIGNAL(textChanged(QString)),
              search,       SLOT(search_update(QString)));
@@ -14,10 +18,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( search, SIGNAL(search_status(QString)),
              ui->statusBar, SLOT(showMessage(QString)));
 
-    connect( ui->pb_opt, SIGNAL(clicked()),
-             this, SLOT(clear_searchline()));
+    connect( ui->pb_opt, &QPushButton::clicked,
+        [=]()
+        {
+            ui->mainline->clear();
+            search->search_clear();
+        });
 
     ui->mainToolBar->hide();
+    populateList();
 }
 
 MainWindow::~MainWindow()
@@ -26,8 +35,46 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::clear_searchline()
+QString MainWindow::getNotesPath()
 {
-    ui->mainline->clear();
-    search->search_clear();
+    //TODO: replace with value from QSettings
+    return QString("../corpus");
+}
+
+
+void MainWindow::iterNotes(noteFunc proc)
+{
+    QString notes_path = getNotesPath();
+
+    QDir ndir(notes_path);
+    if( !ndir.exists() )
+    {
+        ui->statusBar->showMessage("Couldn't open note path " + notes_path);
+        return; // doesn't exist
+    }
+
+    QStringList flist = ndir.entryList( QDir::Files|QDir::Readable, QDir::Name);
+    for( auto fname : flist )
+    {
+        proc(fname);
+    }
+}
+
+void MainWindow::populateList()
+{
+    if( notelist==0 )
+    {
+        notelist = new QStringList();
+    }
+
+    ui->doclist->clear();
+    auto plist = ui->doclist;
+    auto nl = notelist;
+    auto procfunc = [plist, nl](const QString& str)
+    {
+        nl->append(str);
+        plist->addItem(nl->back());
+    };
+
+    iterNotes(procfunc);
 }
