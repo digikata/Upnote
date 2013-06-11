@@ -102,4 +102,18 @@ void MainWindow::populateList()
     };
 
     iterNotes(procfunc);
+
+    auto loadfunc = [this](const QString& fname)
+    {
+        QString fpath = getNotesPath() + "/" + fname;
+        QFile ff(fpath);
+
+        ff.open(QFile::ReadOnly);
+        QString note;
+        note = ff.readAll();
+        ff.close();
+
+        search->load_entry(fname, note);
+    };
+    iterNotes(loadfunc);
 }
