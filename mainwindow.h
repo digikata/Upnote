@@ -5,6 +5,7 @@
 #include <QString>
 #include <QStringList>
 #include <QMainWindow>
+#include <QListWidget>
 
 #include "searcher.h"
 
@@ -23,7 +24,7 @@ public:
     ~MainWindow();
 
 public slots:
-
+    void elideNotes(const QStringList&);
 
 private:
     Ui::MainWindow *ui;
@@ -34,8 +35,10 @@ private:
 
     // title, path
     typedef std::function<void (const QString&)> noteFunc;
+    typedef std::function<void (QListWidgetItem*)> nitFunc;
 
     void iterNotes(noteFunc);
+    void iterList(nitFunc);
     void loadNote( const QString& fname);
     void populateList();
 };

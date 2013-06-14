@@ -4,6 +4,7 @@
 #include "searcher.h"
 
 static QSqlDatabase* s_db = 0;
+static QSqlQuery* s_qy = 0;
 
 Searcher::Searcher(QObject *parent) :
     QObject(parent)
@@ -46,5 +47,21 @@ void Searcher::search_clear()
 
 void Searcher::search_update(QString str)
 {
+    if( s_qy == 0 )
+    {
+        s_qy = new QSqlQuery(*s_db);
+        s_qy->prepare("SELECT fname FROM docs WHERE docs MATCH :sterm;");
+    }
     emit search_status("Searching: " + str);
+
+    QString sstr = "*" + str + "*";
+    s_qy->bindValue( ":sterm", QVariant(sstr));
+    s_qy->exec();
+
+    QStringList results;
+    while(s_qy->next())
+    {
+        results << s_qy->value(0).toString();
+    }
+    emit search_results(results);
 }

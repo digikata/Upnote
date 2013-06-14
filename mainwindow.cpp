@@ -18,11 +18,18 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( search, SIGNAL(search_status(QString)),
              ui->statusBar, SLOT(showMessage(QString)));
 
+    connect( search, SIGNAL(search_results(QStringList)),
+             this, SLOT(elideNotes(QStringList)));
+
     connect( ui->pb_opt, &QPushButton::clicked,
         [=]()
         {
             ui->mainline->clear();
             search->search_clear();
+            iterList( [](QListWidgetItem* it)
+            {
+                it->setHidden(false);
+            });
         });
 
     ui->mainToolBar->hide();
@@ -33,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             loadNote(item->text());
         });
+
+
 }
 
 MainWindow::~MainWindow()
@@ -47,6 +56,27 @@ QString MainWindow::getNotesPath()
     return QString("../corpus");
 }
 
+void MainWindow::elideNotes(const QStringList & notefiles)
+{
+    ui->doclist->setUpdatesEnabled(false);
+    for( int irow=0; irow<ui->doclist->count(); ++irow)
+    {
+        auto it = ui->doclist->item(irow);
+        it->setHidden(!notefiles.contains( it->text() ));
+    }
+    ui->doclist->setUpdatesEnabled(true);
+}
+
+
+void MainWindow::iterList(nitFunc nitfunc)
+{
+    ui->doclist->setUpdatesEnabled(false);
+    for( int irow=0; irow<ui->doclist->count(); ++irow)
+    {
+       nitfunc(ui->doclist->item(irow));
+    }
+    ui->doclist->setUpdatesEnabled(true);
+}
 
 void MainWindow::iterNotes(noteFunc proc)
 {

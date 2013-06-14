@@ -2,6 +2,7 @@
 #define SEARCHER_H
 
 #include <QObject>
+#include <QStringList>
 
 class Searcher : public QObject
 {
@@ -12,6 +13,7 @@ public:
 
 signals:
     void search_status(QString);
+    void search_results(const QStringList&);
 
 public slots:
     void load_entry(const QString& title, const QString& body);
