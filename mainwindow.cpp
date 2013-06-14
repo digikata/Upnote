@@ -67,6 +67,10 @@ QString MainWindow::getNotesPath()
 void MainWindow::elideNotes(const QStringList & notefiles)
 {
     ui->doclist->setUpdatesEnabled(false);
+    if( notefiles.length()>0)
+    {
+        loadNote(notefiles.at(0));
+    }
     for( int irow=0; irow<ui->doclist->count(); ++irow)
     {
         auto it = ui->doclist->item(irow);
