@@ -11,12 +11,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     search = new Searcher(this);
     notelist = 0;
+    settings = 0;
 
     connect( ui->mainline, SIGNAL(textChanged(QString)),
              search,       SLOT(search_update(QString)));
 
-    connect( search, SIGNAL(search_status(QString)),
-             ui->statusBar, SLOT(showMessage(QString)));
+//    connect( search, SIGNAL(search_status(QString)),
+//             ui->statusBar, SLOT(showMessage(QString)));
 
     connect( search, SIGNAL(search_results(QStringList)),
              this, SLOT(elideNotes(QStringList)));
@@ -41,19 +42,26 @@ MainWindow::MainWindow(QWidget *parent) :
             loadNote(item->text());
         });
 
-
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete settings;
 }
 
 
 QString MainWindow::getNotesPath()
 {
-    //TODO: replace with value from QSettings
-    return QString("../corpus");
+    if( settings == 0)
+    {
+        const QString orgval("Upnote");
+        settings = new QSettings(QSettings::NativeFormat,
+                                 QSettings::UserScope,
+                                 orgval, QString(), this );
+    }
+    notespath = settings->value("notes_path", QString("./notes") ).toString();
+    return notespath;
 }
 
 void MainWindow::elideNotes(const QStringList & notefiles)
