@@ -42,6 +42,10 @@ MainWindow::MainWindow(QWidget *parent) :
             loadNote(item->text());
         });
 
+    split = new QSplitter();
+    ui->centralWidget->layout()->addWidget(split);
+    split->addWidget(ui->doclist);
+    split->addWidget(ui->textEdit);
 }
 
 MainWindow::~MainWindow()

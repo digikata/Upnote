@@ -18,7 +18,14 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QLineEdit" name="mainline"/>
+       <widget class="QLineEdit" name="mainline">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>20</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="pb_opt">
@@ -36,31 +43,14 @@
      </layout>
     </item>
     <item>
-     <widget class="QTabWidget" name="tabs">
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="tab_list">
-       <attribute name="title">
-        <string>Note List</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QListWidget" name="doclist"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_doc">
-       <attribute name="title">
-        <string>Note</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QTextEdit" name="textEdit"/>
-        </item>
-       </layout>
-      </widget>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QListWidget" name="doclist"/>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="textEdit"/>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>

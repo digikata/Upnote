@@ -7,6 +7,7 @@
 #include <QMainWindow>
 #include <QListWidget>
 #include <QSettings>
+#include <QSplitter>
 
 #include "searcher.h"
 
@@ -33,6 +34,7 @@ private:
     Ui::MainWindow *ui;
     Searcher* search;
     QStringList* notelist;
+    QSplitter* split;
     QSettings* settings;
     QString notespath;
 
