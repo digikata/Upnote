@@ -1,6 +1,7 @@
 
 #include <QStringList>
 #include <QDir>
+#include <QTextStream>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -12,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     search = new Searcher(this);
     notelist = 0;
     settings = 0;
+    note_changed = false;
 
     connect( ui->mainline, SIGNAL(textChanged(QString)),
              search,       SLOT(search_update(QString)));
@@ -22,8 +24,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( search, SIGNAL(search_results(QStringList)),
              this, SLOT(elideNotes(QStringList)));
 
+    connect( ui->textEdit, &QTextEdit::textChanged,
+        [this]()
+        {
+            note_changed = true;
+        });
+
     connect( ui->pb_opt, &QPushButton::clicked,
-        [=]()
+        [this]()
         {
             ui->mainline->clear();
             search->search_clear();
@@ -37,8 +45,12 @@ MainWindow::MainWindow(QWidget *parent) :
     populateList();
 
     connect( ui->doclist, &QListWidget::itemClicked,
-        [=](QListWidgetItem* item)
+        [this](QListWidgetItem* item)
         {
+            if( note_changed )
+            {
+                saveNote(notefile);
+            }
             loadNote(item->text());
         });
 
@@ -46,6 +58,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->centralWidget->layout()->addWidget(split);
     split->addWidget(ui->doclist);
     split->addWidget(ui->textEdit);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -127,8 +141,22 @@ void MainWindow::loadNote(const QString &fname)
     note = ff.readAll();
     ff.close();
 
+    notefile = fname;
+    note_changed = false;
     ui->textEdit->setText(note);
     ui->textEdit->setUpdatesEnabled(true);
+}
+
+void MainWindow::saveNote(const QString &fname)
+{
+    QString fpath = getNotesPath() + "/" + fname;
+    QFile ff(fpath);
+    QString note = ui->textEdit->toPlainText();
+    ff.open(QFile::WriteOnly);
+    QTextStream why(&ff);
+    why << note;
+    ff.close();
+    note_changed = false;
 }
 
 void MainWindow::populateList()

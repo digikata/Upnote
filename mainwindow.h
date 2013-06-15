@@ -37,6 +37,8 @@ private:
     QSplitter* split;
     QSettings* settings;
     QString notespath;
+    bool note_changed;
+    QString notefile;
 
     // title, path
     typedef std::function<void (const QString&)> noteFunc;
@@ -44,8 +46,10 @@ private:
 
     void iterNotes(noteFunc);
     void iterList(nitFunc);
-    void loadNote( const QString& fname);
     void populateList();
+
+    void loadNote( const QString& fname);
+    void saveNote( const QString& fname);
 };
 
 #endif // MAINWINDOW_H
