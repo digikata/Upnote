@@ -24,4 +24,5 @@ FORMS    += mainwindow.ui
 
 OTHER_FILES += \
     notes.txt \
-    BUGS
+    BUGS \
+    Readme.md

@@ -1,7 +1,8 @@
 TODO:
+* need dialog for file directory setting
 * update the database on file changes
 * some funny behavior on corner cases
-* need dialog for file directory setting
+* for new files, show note entry in doclist as soon as it's changed the first time...
 
 FIXED:
 * file create bug
