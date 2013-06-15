@@ -38,6 +38,7 @@ private:
     QSettings* settings;
     QString notespath;
     bool note_changed;
+    bool note_create;
     QString notefile;
 
     // title, path

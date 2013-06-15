@@ -5,6 +5,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -14,12 +16,10 @@ MainWindow::MainWindow(QWidget *parent) :
     notelist = 0;
     settings = 0;
     note_changed = false;
+    note_create = false;
 
     connect( ui->mainline, SIGNAL(textChanged(QString)),
              search,       SLOT(search_update(QString)));
-
-//    connect( search, SIGNAL(search_status(QString)),
-//             ui->statusBar, SLOT(showMessage(QString)));
 
     connect( search, SIGNAL(search_results(QStringList)),
              this, SLOT(elideNotes(QStringList)));
@@ -28,6 +28,14 @@ MainWindow::MainWindow(QWidget *parent) :
         [this]()
         {
             note_changed = true;
+            if( note_create )
+            {
+                note_create = false;
+                notefile = ui->mainline.text();
+                saveNote(notefile);
+                ui->doclist.addItem(notefile);
+                loadNote(notefile);
+            }
         });
 
     connect( ui->pb_opt, &QPushButton::clicked,
@@ -58,9 +66,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->centralWidget->layout()->addWidget(split);
     split->addWidget(ui->doclist);
     split->addWidget(ui->textEdit);
-
-
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -82,10 +89,15 @@ QString MainWindow::getNotesPath()
     return notespath;
 }
 
+
 void MainWindow::elideNotes(const QStringList & notefiles)
 {
     ui->doclist->setUpdatesEnabled(false);
-    if( notefiles.length()>0)
+    if( notefiles.length()==0)
+    {
+        note_create = true;
+    }
+    else
     {
         loadNote(notefiles.at(0));
     }
@@ -107,6 +119,7 @@ void MainWindow::iterList(nitFunc nitfunc)
     }
     ui->doclist->setUpdatesEnabled(true);
 }
+
 
 void MainWindow::iterNotes(noteFunc proc)
 {
@@ -147,6 +160,7 @@ void MainWindow::loadNote(const QString &fname)
     ui->textEdit->setUpdatesEnabled(true);
 }
 
+
 void MainWindow::saveNote(const QString &fname)
 {
     QString fpath = getNotesPath() + "/" + fname;
@@ -158,6 +172,7 @@ void MainWindow::saveNote(const QString &fname)
     ff.close();
     note_changed = false;
 }
+
 
 void MainWindow::populateList()
 {
