@@ -6,7 +6,6 @@
 #include "ui_mainwindow.h"
 
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -15,11 +14,35 @@ MainWindow::MainWindow(QWidget *parent) :
     search = new Searcher(this);
     notelist = 0;
     settings = 0;
-    note_changed = false;
-    note_create = false;
+    note_changed  = false;
+    ignore_change = false;
 
     connect( ui->mainline, SIGNAL(textChanged(QString)),
              search,       SLOT(search_update(QString)));
+    connect( ui->mainline, &QLineEdit::returnPressed,
+        [this]()
+        {
+            ui->textEdit->setFocus();
+            QString linefile = ui->mainline->text();
+            bool found = false;
+            for( auto fname : *notelist )
+            {
+                if( fname == linefile )
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if( !found )
+            {
+                note_changed = false;
+                notefile = linefile;
+                ui->statusBar->showMessage("Notefile: " + notefile);
+                clearNote();
+                // only created if user edits it now..
+            }
+        });
+
 
     connect( search, SIGNAL(search_results(QStringList)),
              this, SLOT(elideNotes(QStringList)));
@@ -27,22 +50,22 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->textEdit, &QTextEdit::textChanged,
         [this]()
         {
+            if(ignore_change) return;
             note_changed = true;
-            if( note_create )
-            {
-                note_create = false;
-                notefile = ui->mainline.text();
-                saveNote(notefile);
-                ui->doclist.addItem(notefile);
-                loadNote(notefile);
-            }
         });
 
     connect( ui->pb_opt, &QPushButton::clicked,
         [this]()
         {
+            if( note_changed )
+            {
+                switchNote(notefile);
+                note_changed = false;
+                clearNote();
+            }
             ui->mainline->clear();
             search->search_clear();
+            ui->doclist->setFocus();
             iterList( [](QListWidgetItem* it)
             {
                 it->setHidden(false);
@@ -55,11 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->doclist, &QListWidget::itemClicked,
         [this](QListWidgetItem* item)
         {
-            if( note_changed )
-            {
-                saveNote(notefile);
-            }
-            loadNote(item->text());
+            switchNote(item->text());
         });
 
     split = new QSplitter();
@@ -92,19 +111,37 @@ QString MainWindow::getNotesPath()
 
 void MainWindow::elideNotes(const QStringList & notefiles)
 {
+    bool exact_title = false;
+    QString fname = ui->mainline->text();
+
     ui->doclist->setUpdatesEnabled(false);
-    if( notefiles.length()==0)
-    {
-        note_create = true;
-    }
-    else
-    {
-        loadNote(notefiles.at(0));
-    }
+
     for( int irow=0; irow<ui->doclist->count(); ++irow)
     {
         auto it = ui->doclist->item(irow);
         it->setHidden(!notefiles.contains( it->text() ));
+        if( it->text() == fname )
+        {
+            exact_title = true;
+        }
+    }
+
+    if( exact_title )
+    {
+        switchNote(fname);
+    }
+    else
+    {
+        if( notefiles.length()>0)
+        {
+            switchNote(notefiles.at(0));
+        }
+        else
+        {
+            // prepare to write the file if user edits the text edit
+            notefile = fname;
+            clearNote();
+        }
     }
     ui->doclist->setUpdatesEnabled(true);
 }
@@ -140,9 +177,23 @@ void MainWindow::iterNotes(noteFunc proc)
 }
 
 
+void MainWindow::clearNote()
+{
+    bool ic = ignore_change;
+    ignore_change = true;
+    ui->textEdit->clear();
+    ignore_change = ic;
+}
+
+
 void MainWindow::loadNote(const QString &fname)
 {
     ui->textEdit->setUpdatesEnabled(false);
+
+    // fires a textchanged which might create a file
+    // unintentionally
+    bool ic = ignore_change;
+    ignore_change = true;
     ui->textEdit->clear();
 
     //TODO: textfile & length check... if too long, just load partial?
@@ -154,9 +205,8 @@ void MainWindow::loadNote(const QString &fname)
     note = ff.readAll();
     ff.close();
 
-    notefile = fname;
-    note_changed = false;
     ui->textEdit->setText(note);
+    ignore_change = ic;
     ui->textEdit->setUpdatesEnabled(true);
 }
 
@@ -170,7 +220,30 @@ void MainWindow::saveNote(const QString &fname)
     QTextStream why(&ff);
     why << note;
     ff.close();
+}
+
+
+void MainWindow::switchNote(const QString &fname)
+{
+    if( note_changed )
+    {
+        if( notefile.length() > 0 )
+        {
+            saveNote(notefile);
+            if( !notelist->contains(notefile) )
+            {
+                *notelist << notefile;
+                loadEntry(notefile);
+                ui->doclist->addItem(notefile);
+            }
+        }
+    }
+    else
+    {
+        loadNote(fname);
+    }
     note_changed = false;
+    notefile = fname;
 }
 
 
@@ -194,15 +267,20 @@ void MainWindow::populateList()
 
     auto loadfunc = [this](const QString& fname)
     {
-        QString fpath = getNotesPath() + "/" + fname;
-        QFile ff(fpath);
-
-        ff.open(QFile::ReadOnly);
-        QString note;
-        note = ff.readAll();
-        ff.close();
-
-        search->load_entry(fname, note);
+        loadEntry(fname);
     };
     iterNotes(loadfunc);
+}
+
+void MainWindow::loadEntry(const QString &fname)
+{
+    QString fpath = getNotesPath() + "/" + fname;
+    QFile ff(fpath);
+
+    ff.open(QFile::ReadOnly);
+    QString note;
+    note = ff.readAll();
+    ff.close();
+
+    search->load_entry(fname, note);
 }

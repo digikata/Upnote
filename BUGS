@@ -1,0 +1,12 @@
+TODO:
+* update the database on file changes
+* some funny behavior on corner cases
+* need dialog for file directory setting
+
+FIXED:
+* file create bug
+  type until unique string found
+  hit enter to go to note
+  type in note
+  click clear (this should save the note but it doesnt..
+

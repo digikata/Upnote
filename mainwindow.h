@@ -39,6 +39,7 @@ private:
     QString notespath;
     bool note_changed;
     bool note_create;
+    bool ignore_change;
     QString notefile;
 
     // title, path
@@ -49,8 +50,12 @@ private:
     void iterList(nitFunc);
     void populateList();
 
+    void loadEntry(const QString& fname);
+
+    void clearNote();
     void loadNote( const QString& fname);
     void saveNote( const QString& fname);
+    void switchNote(const QString& fname);
 };
 
 #endif // MAINWINDOW_H

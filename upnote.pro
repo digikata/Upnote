@@ -23,4 +23,5 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 
 OTHER_FILES += \
-    notes.txt
+    notes.txt \
+    BUGS
