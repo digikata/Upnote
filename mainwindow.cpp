@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QTextStream>
 #include <QFileDialog>
+#include <QApplication>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -12,6 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QCoreApplication* app = QApplication::instance();
+    app->setApplicationName("Upnote");
+
     search = new Searcher(this);
     notelist = 0;
     settings = 0;
@@ -122,10 +126,7 @@ QString MainWindow::getNotesPath()
 {
     if( settings == 0)
     {
-        const QString orgval("Upnote");
-        settings = new QSettings(QSettings::NativeFormat,
-                                 QSettings::UserScope,
-                                 orgval, QString(), this );
+        settings = new QSettings();
     }
     notespath = settings->value("notes_path", QString("./notes") ).toString();
     return notespath;

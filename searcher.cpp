@@ -1,5 +1,7 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
+#include <QStandardPaths>
+#include <QDir>
 #include <QVariant>
 #include "searcher.h"
 
@@ -13,8 +15,16 @@ Searcher::Searcher(QObject *parent) :
     {
         s_db = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
     }
+    QStringList dirs = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    QDir datadir(dirs.at(0));
+    if(!datadir.exists()  )
+    {
+        datadir.mkpath(dirs.at(0));
+    }
+    QString dbpath = datadir.path() + "/upnote.db";
+
     s_db->setHostName("localhost");
-    s_db->setDatabaseName("tmp.db");
+    s_db->setDatabaseName(dbpath);
     s_db->open();
 
     QSqlQuery setuptable(*s_db);
@@ -39,6 +49,7 @@ void Searcher::load_entry( const QString &title, const QString &body)
     load.bindValue( ":body", QVariant(body) );
     load.exec();
 }
+
 
 void Searcher::update_entry( const QString &title, const QString &body )
 {
