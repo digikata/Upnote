@@ -17,6 +17,8 @@ signals:
 
 public slots:
     void load_entry(const QString& title, const QString& body);
+    void update_entry(const QString& title, const QString& body);
+        
     void search_clear();
     void search_update(QString);
 };

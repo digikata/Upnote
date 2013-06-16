@@ -259,6 +259,10 @@ void MainWindow::switchNote(const QString &fname)
                 loadEntry(notefile);
                 ui->doclist->addItem(notefile);
             }
+            else
+            {
+                updateEntry(notefile);
+            }
         }
     }
     else
@@ -295,6 +299,7 @@ void MainWindow::populateList()
     iterNotes(loadfunc);
 }
 
+
 void MainWindow::loadEntry(const QString &fname)
 {
     QString fpath = getNotesPath() + "/" + fname;
@@ -306,4 +311,18 @@ void MainWindow::loadEntry(const QString &fname)
     ff.close();
 
     search->load_entry(fname, note);
+}
+
+
+void MainWindow::updateEntry(const QString &fname)
+{
+    QString fpath = getNotesPath() + "/" + fname;
+    QFile ff(fpath);
+
+    ff.open(QFile::ReadOnly);
+    QString note;
+    note = ff.readAll();
+    ff.close();
+
+    search->update_entry(fname, note);
 }

@@ -52,7 +52,8 @@ private:
     void populateList();
 
     void loadEntry(const QString& fname);
-
+    void updateEntry(const QString& fname);
+    
     void clearNote();
     void loadNote( const QString& fname);
     void saveNote( const QString& fname);

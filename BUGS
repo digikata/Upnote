@@ -1,10 +1,10 @@
 TODO:
-* need dialog for file directory setting
-* update the database on file changes
-* some funny behavior on corner cases
 * for new files, show note entry in doclist as soon as it's changed the first time...
+* some funny behavior on corner cases
 
 FIXED:
+* update the database on file changes
+* need dialog for file directory setting
 * file create bug
   type until unique string found
   hit enter to go to note

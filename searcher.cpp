@@ -40,6 +40,20 @@ void Searcher::load_entry( const QString &title, const QString &body)
     load.exec();
 }
 
+void Searcher::update_entry( const QString &title, const QString &body )
+{
+    static QSqlQuery update(*s_db);
+    static bool do_prep = true;
+    if( do_prep )
+    {
+        do_prep = false;
+        update.prepare("UPDATE docs SET body=:body WHERE fname=:fname;");
+    }
+    update.bindValue( ":fname", QVariant(title) );
+    update.bindValue( ":body", QVariant(body) );
+    update.exec();
+}
+
 void Searcher::search_clear()
 {
     emit search_status("Search clear");
