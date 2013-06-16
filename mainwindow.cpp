@@ -2,6 +2,7 @@
 #include <QStringList>
 #include <QDir>
 #include <QTextStream>
+#include <QFileDialog>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -85,6 +86,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->centralWidget->layout()->addWidget(split);
     split->addWidget(ui->doclist);
     split->addWidget(ui->textEdit);
+
+    connect(ui->actionConfig, SIGNAL(triggered()),
+            this, SLOT(configDir()) );
 }
 
 
@@ -94,6 +98,18 @@ MainWindow::~MainWindow()
     delete settings;
 }
 
+void MainWindow::configDir()
+{
+    ui->statusBar->showMessage("configDir");
+    QString newdir = QFileDialog::getExistingDirectory(this,
+      "Select new note directory",
+      settings->value("notes_path").toString());
+        ui->statusBar->showMessage("selected dir " + newdir);
+    if( newdir.length() > 0 )
+    {
+        settings->setValue("notes_path", newdir);
+    }
+}
 
 QString MainWindow::getNotesPath()
 {

@@ -67,7 +67,7 @@
     <property name="title">
      <string>Options</string>
     </property>
-    <addaction name="actionStorage"/>
+    <addaction name="actionConfig"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -95,7 +95,7 @@
     <string>About</string>
    </property>
   </action>
-  <action name="actionStorage">
+  <action name="actionConfig">
    <property name="text">
     <string>Config</string>
    </property>

@@ -29,6 +29,7 @@ public:
 
 public slots:
     void elideNotes(const QStringList&);
+    void configDir();
 
 private:
     Ui::MainWindow *ui;
