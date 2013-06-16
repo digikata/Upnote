@@ -108,6 +108,13 @@ void MainWindow::configDir()
     if( newdir.length() > 0 )
     {
         settings->setValue("notes_path", newdir);
+        ui->doclist->setUpdatesEnabled(false);
+        ui->textEdit->setUpdatesEnabled(false);
+        ui->doclist->clear();
+        clearNote();
+        populateList();
+        ui->doclist->setUpdatesEnabled(true);
+        ui->textEdit->setUpdatesEnabled(true);
     }
 }
 
