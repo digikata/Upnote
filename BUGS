@@ -1,8 +1,8 @@
 TODO:
-* for new files, show note entry in doclist as soon as it's changed the first time...
 * some funny behavior on corner cases
 
 FIXED:
+* for new files, show note entry in doclist as soon as it's changed the first time...
 * update the database on file changes
 * need dialog for file directory setting
 * file create bug
