@@ -41,6 +41,7 @@ private:
     bool note_changed;
     bool note_create;
     bool ignore_change;
+    bool never_saved;
     QString notefile;
 
     // title, path

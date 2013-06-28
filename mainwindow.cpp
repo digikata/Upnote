@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     settings = 0;
     note_changed  = false;
     ignore_change = false;
+    never_saved = false;
 
     connect( ui->mainline, SIGNAL(textChanged(QString)),
              search,       SLOT(search_update(QString)));
@@ -45,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 ui->statusBar->showMessage("Notefile: " + notefile);
                 clearNote();
                 // only created if user edits it now..
+                never_saved = true;
             }
         });
 
@@ -57,6 +59,17 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             if(ignore_change) return;
             note_changed = true;
+            if( never_saved )
+            {
+                never_saved = false;
+                saveNote(notefile);
+                if( !notelist->contains(notefile) )
+                {
+                    *notelist << notefile;
+                    ui->doclist->addItem( notelist->back() );
+                    search->load_entry(notefile, ui->textEdit->toPlainText());
+                }
+            }
         });
 
     connect( ui->pb_opt, &QPushButton::clicked,
@@ -232,6 +245,7 @@ void MainWindow::loadNote(const QString &fname)
     ui->textEdit->setText(note);
     ignore_change = ic;
     ui->textEdit->setUpdatesEnabled(true);
+    never_saved = false;
 }
 
 
